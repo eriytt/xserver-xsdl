@@ -38,6 +38,7 @@
 #include <pthread.h>
 #include <sys/inotify.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #ifdef __ANDROID__
 #include <SDL/SDL_screenkeyboard.h>
