@@ -419,7 +419,7 @@ done
 # =========== libpixman-1.a ===========
 
 [ -e libpixman-1.a ] || {
-PKGURL=http://cairographics.org/releases/pixman-0.30.2.tar.gz
+PKGURL=https://www.cairographics.org/releases/pixman-0.30.2.tar.gz
 PKGDIR=`basename --suffix=.tar.gz $PKGURL`
 echo $PKGDIR: $PKGURL
 [ -e ../$PKGDIR.tar.gz ] || curl $PKGURL -o ../$PKGDIR.tar.gz || rm ../$PKGDIR.tar.gz
@@ -633,7 +633,7 @@ env CFLAGS="-isystem$BUILDDIR \
 -include strings.h -DSO_REUSEADDR=1" \
 LDFLAGS="-L$BUILDDIR" \
 $BUILDDIR/setCrossEnvironment.sh \
-./configure \
+./configure --disable-xkb --disable-xv \
 --host=$TARGET_HOST \
 --prefix=$TARGET_DIR/usr \
 || exit 1
@@ -1336,9 +1336,9 @@ env CFLAGS=" -DDEBUG \
 	-I$BUILDDIR/../../../../../../jni/crypto/include" \
 LDFLAGS="-L$BUILDDIR -L$BUILDDIR/../../../../../../jni/crypto/lib-$TARGET_ARCH" \
 ./setCrossEnvironment.sh \
-LIBS="-lfontenc -lfreetype -llog -lSDL -lGLESv1_CM -landroid-shmem -l:libcrypto.so.sdl.0.so" \
-OPENSSL_LIBS=-l:libcrypto.so.sdl.0.so \
-LIBSHA1_LIBS=-l:libcrypto.so.sdl.0.so \
+    LIBS="-lfontenc -lfreetype -llog -lSDL -lGLESv1_CM -landroid-shmem -l:libcrypto.so.sdl.1.so" \
+    OPENSSL_CFLAGS=-Dfoobarbaz \
+OPENSSL_LIBS=-l:libcrypto.so.sdl.1.so \
 ../../configure \
 --host=$TARGET_HOST \
 --prefix=$TARGET_DIR/usr \
