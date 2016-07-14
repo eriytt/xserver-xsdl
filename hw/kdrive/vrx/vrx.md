@@ -1,0 +1,49 @@
+# Init sequence
+
+- **android_main** (dix/main.c)
+ - **OsInit** (os/osinit.c)
+  - **OsVendorInit** (hw/kdrive/vrx/vrxinit.c)
+  - **LogInit** (os/log.c)
+  - **SmartScheduleInit** (os/utils.c)
+ - **InitAtoms**
+ - **InitEvents**
+ - **InitSelections**
+ - **InitGlyphCaching**
+ - **dixResetRegistry**
+ - **ResetFontPrivateIndex**
+ - **InitCallbackManager**
+ - **InitOutput** (hw/kdrive/vrx/vrxinit.c)
+  - **KdInitOutput** (hw/kdrive/src/kdrive.c)
+   - **InitCard** (hw/kdrive/vrx/vrxinit.c)
+    - **KdCardInfoAdd**
+    - **fakeCardInit** (hw/kdrive/vrx/vrx.c)
+   - **KdInitScreen** (hw/kdrive/src/kdrive.c)
+    - **fakeScreenInit** (hw/kdrive/vrx/vrx.c)
+    - **initAccel** (not implemented)
+    - **fakeFinishInitScreen** (hw/kdrive/vrx/vrx.c)
+    - **initCursor** (not implemented)
+    - **fakePreserve** (hw/kdrive/vrx/vrx.c)
+    - **fakeEnable** (hw/kdrive/vrx/vrx.c)
+    - **enableCursor** (not implemented)
+    - **KdEnableColorMap** (hw/kdrive/src/kcmap.c)
+     - **fakeGetColors** (hw/kdrive/vrx/vrx.c)
+     - **KdSetColorMap** (hw/kdrive/src/kcmap.c)
+      - **fakeSetColors** (hw/kdrive/vrx/vrx.c)
+    - **enableAccel** (not implemented)
+ - **CreateScratchPixmapsForScreen** (dix/pixmap.c)
+ - **KdCreateScreenResources** (hw/kdrive/src/kdrive.c)
+  - **fakeCreateResources** (hw/kdrive/vrx/vrx.c)
+   - **fakeSetShadow** (hw/kdrive/vrx/vrx.c)
+    - **KdShadowSet** (hw/kdrive/src/kshadow.c)
+ - **CreateRootWindow** (dix/window.c)
+ - **InitFonts** (dix/dixfonts.c)
+ - **SetDefaultFontPath** (dix/dixfonts.c)
+ - **SetDefaultFont** (dix/dixfonts.c)
+ - **CreateRootCursor** (dix/cursor.c)
+ - **InitRootWindow** (dix/window.c)
+ - **InitCoreDevices** (dix/devices.c)
+ - **InitInput** (hw/kdrive/vrx/vrxinit.c)
+ - **InitAndStartDevices** (dix/devices.c)
+ - **ReserveClientIds** (os/client.c)
+ - **CreateConnectionBlock** (dix/dispatch.c)
+ - **Dispatch** (dix/dispatch.c)
