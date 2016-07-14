@@ -1,6 +1,11 @@
 # Init sequence
 
 - **android_main** (dix/main.c)
+    - **ProcessCommandLine** (os/utils.c)
+        - **ddxProcessArgument** (hw/kdrive/vrx/vrxinit.c)
+            - **KdProcessArgument** (hw/kdrive/src/kdrive.c)
+                - **KdParseScreen** (hw/kdrive/src/kdrive.c)
+		  Sets screen width and height if given on command line.
     - **OsInit** (os/osinit.c)
         - **OsVendorInit** (hw/kdrive/vrx/vrxinit.c)
         - **LogInit** (os/log.c)
@@ -20,7 +25,7 @@
             - **KdInitScreen** (hw/kdrive/src/kdrive.c)
                 - **fakeScreenInit** (hw/kdrive/vrx/vrx.c)
                     - **fakeScreenInitialize** (hw/kdrive/vrx/vrx.c)
-                        - **fakeMapFramebuffer** (hw/kdrive/vrx/vrx.c)
+                        - **fakeMapFramebuffer** (hw/kdrive/vrx/vrx.c)  
                           This is where the framebuffer memory is allocated. Note that this function can also be called (indirectly) by a randr request to change screen size.
                 - **initAccel** (not implemented)
                 - **fakeFinishInitScreen** (hw/kdrive/vrx/vrx.c)
