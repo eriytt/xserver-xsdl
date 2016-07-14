@@ -1312,9 +1312,8 @@ sh -c '$STRIP xsel'
 cd $BUILDDIR
 } || exit 1
 
-# =========== xsdl ==========
+# =========== vrx ==========
 
-ln -sf $BUILDDIR/../../../../../../libs/$TARGET_ARCH/libsdl-1.2.so $BUILDDIR/libSDL.so
 ln -sf $BUILDDIR/libportable.a $BUILDDIR/libpthread.a # dummy
 ln -sf $BUILDDIR/libportable.a $BUILDDIR/libts.a # dummy
 
@@ -1332,11 +1331,10 @@ env CFLAGS=" -DDEBUG \
 	-DSO_REUSEADDR=1 \
 	-Dipc_perm=debian_ipc_perm \
 	-I$BUILDDIR/pixman-0.30.2/pixman \
-	-I$BUILDDIR/../../../../../../jni/sdl-1.2/include \
 	-I$BUILDDIR/../../../../../../jni/crypto/include" \
 LDFLAGS="-L$BUILDDIR -L$BUILDDIR/../../../../../../jni/crypto/lib-$TARGET_ARCH" \
 ./setCrossEnvironment.sh \
-    LIBS="-lfontenc -lfreetype -llog -lSDL -lGLESv1_CM -landroid-shmem -l:libcrypto.so.sdl.1.so" \
+    LIBS="-lfontenc -lfreetype -llog -lGLESv1_CM -landroid-shmem -l:libcrypto.so.sdl.1.so" \
     OPENSSL_CFLAGS=-Dfoobarbaz \
 OPENSSL_LIBS=-l:libcrypto.so.sdl.1.so \
 ../../configure \
@@ -1346,7 +1344,7 @@ OPENSSL_LIBS=-l:libcrypto.so.sdl.1.so \
 --disable-xorg --disable-dmx --disable-xvfb --disable-xnest --disable-xquartz --disable-xwin \
 --disable-xephyr --disable-xfake --disable-xfbdev --disable-unit-tests --disable-tslib \
 --disable-dri --disable-dri2 --disable-glx --disable-xf86vidmode \
---enable-xsdl --enable-kdrive --enable-kdrive-kbd --enable-kdrive-mouse --enable-kdrive-evdev \
+--enable-vrx --disable-xsdl --enable-kdrive --enable-kdrive-kbd --enable-kdrive-mouse --enable-kdrive-evdev \
 --enable-shm --enable-mitshm --disable-config-udev \
 || exit 1
 
