@@ -19,8 +19,12 @@
                 - **fakeCardInit** (hw/kdrive/vrx/vrx.c)
             - **KdInitScreen** (hw/kdrive/src/kdrive.c)
                 - **fakeScreenInit** (hw/kdrive/vrx/vrx.c)
+                    - **fakeScreenInitialize** (hw/kdrive/vrx/vrx.c)
+                        - **fakeMapFramebuffer** (hw/kdrive/vrx/vrx.c)
+                          This is where the framebuffer memory is allocated. Note that this function can also be called (indirectly) by a randr request to change screen size.
                 - **initAccel** (not implemented)
                 - **fakeFinishInitScreen** (hw/kdrive/vrx/vrx.c)
+                    - **fakeRandRInit** (hw/kdrive/vrx/vrx.c)
                 - **initCursor** (not implemented)
                 - **fakePreserve** (hw/kdrive/vrx/vrx.c)
                 - **fakeEnable** (hw/kdrive/vrx/vrx.c)
