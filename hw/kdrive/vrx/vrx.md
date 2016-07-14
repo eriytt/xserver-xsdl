@@ -4,7 +4,7 @@
     - **ProcessCommandLine** (os/utils.c)
         - **ddxProcessArgument** (hw/kdrive/vrx/vrxinit.c)
             - **KdProcessArgument** (hw/kdrive/src/kdrive.c)
-                - **KdParseScreen** (hw/kdrive/src/kdrive.c)
+                - **KdParseScreen** (hw/kdrive/src/kdrive.c)  
 		  Sets screen width and height if given on command line.
     - **OsInit** (os/osinit.c)
         - **OsVendorInit** (hw/kdrive/vrx/vrxinit.c)
