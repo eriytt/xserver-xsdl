@@ -470,3 +470,17 @@ void
 fakePutColors (ScreenPtr pScreen, int n, xColorItem *pdefs)
 {
 }
+
+KdFrameBuffer *
+vrxGetFramebuffer(void)
+{
+  KdCardInfo *cardinfo = KdCardInfoLast();
+  if (!cardinfo)
+    return 0;
+
+  KdScreenInfo *screeninfo = cardinfo->screenList;
+  if (!screeninfo)
+    return 0;
+
+  return &screeninfo->fb;
+}
