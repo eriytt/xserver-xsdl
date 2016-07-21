@@ -295,7 +295,7 @@ LogVWrite(int verb, const char *f, va_list args)
     if ((verb < 0 || logVerbosity >= verb) && len > 0)
 	fwrite(tmpBuffer, len, 1, stderr);
 #ifdef __ANDROID__
-	__android_log_write(ANDROID_LOG_INFO, "XSDL", tmpBuffer);
+	__android_log_write(ANDROID_LOG_INFO, "VRXServer", tmpBuffer);
 #endif
     if ((verb < 0 || logFileVerbosity >= verb) && len > 0) {
 	if (logFile) {

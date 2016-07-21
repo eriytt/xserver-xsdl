@@ -28,12 +28,14 @@
 void
 InitCard (char *name)
 {
+    LOGI("InitCard");
     KdCardInfoAdd (&fakeFuncs, 0);
 }
 
 void
 InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 {
+    LOGI("InitOutput");
     KdInitOutput (pScreenInfo, argc, argv);
 }
 
@@ -43,6 +45,8 @@ InitInput (int argc, char **argv)
     KdPointerInfo *pi;
     KdKeyboardInfo *ki;
 
+
+    LOGI("InitInput");
     pi = KdNewPointer ();
     if (!pi)
         return;
@@ -86,6 +90,7 @@ ddxProcessArgument (int argc, char **argv, int i)
 void
 OsVendorInit (void)
 {
+    LOGI("OsVendorInit");
     KdOsInit (&FakeOsFuncs);
 }
 

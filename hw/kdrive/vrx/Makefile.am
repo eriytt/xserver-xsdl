@@ -17,7 +17,7 @@ vrx_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 
 noinst_LIBRARIES = libvrx.a
 
-libvrx_a_SOURCES = vrx.c vrxinit.c kbd.c mouse.c os.c fake.h
+libvrx_a_SOURCES = jni.c vrx.c vrxinit.c kbd.c mouse.c os.c fake.h
 
 relink:
 	rm -f $(bin_PROGRAMS) && make $(bin_PROGRAMS)

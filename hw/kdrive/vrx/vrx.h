@@ -133,4 +133,12 @@ extern KdKeyboardDriver	FakeKeyboardDriver;
 
 extern KdOsFuncs   FakeOsFuncs;
 
+#include <android/log.h>
+#define VRX_LOG_TAG "VRXserver:"
+#define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+
 #endif /* _FBDEV_H_ */
