@@ -168,6 +168,7 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
     char *xkbbasedirflag = NULL;
     const char	*xkbbindir = emptystring;
     const char	*xkbbindirsep = emptystring;
+    char kbdtxtbuf[1024];
 
 #ifdef WIN32
     /* WIN32 has no popen. The input must be stored in a file which is
@@ -205,16 +206,22 @@ XkbDDXCompileKeymapByNames(	XkbDescPtr		xkb,
 	}
     }
 
-	out = fopen("x-keyboard.txt", "w");
-	if (out) {
-		XkbWriteXKBKeymapForNames(out,names,xkb,want,need);
-		fclose(out);
-	}
+    if (snprintf(kbdtxtbuf, 1024, "%s/%s", getenv("SECURE_STORAGE_DIR"), "x-keyboard.txt") > 1023)
+      {
+	LogMessage(X_ERROR, "Failed to build keyboard path string, path %s too long", getenv("SECURE_STORAGE_DIR"));
+	return FALSE;
+      }
+
+    out = fopen(kbdtxtbuf, "w");
+    if (out) {
+      XkbWriteXKBKeymapForNames(out,names,xkb,want,need);
+      fclose(out);
+    }
 
     if (asprintf(&buf,
-		 "cat x-keyboard.txt | %s%sxkbcomp -I%s/usr/share/X11/xkb -w %d %s -xkm %s "
+		 "cat %s | %s%sxkbcomp -I%s/usr/share/X11/xkb -w %d %s -xkm %s "
 		  "-em1 %s -emp %s -eml %s %s%s.xkm 2>%s/popen-stderr.txt",
-		 xkbbindir, xkbbindirsep,
+		 kbdtxtbuf, xkbbindir, xkbbindirsep,
 		 (getenv("SECURE_STORAGE_DIR") ? getenv("SECURE_STORAGE_DIR") : ""),
 		 ((xkbDebugFlags < 2) ? 1 :
 		  ((xkbDebugFlags > 10) ? 10 : (int) xkbDebugFlags)),
