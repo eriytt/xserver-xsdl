@@ -4,6 +4,7 @@
 #include <jni.h>
 
 extern int android_main(int argc, char *argv[], char *envp[]);
+extern char *vrxGetFramebuffer(void);
 
 #define JNI_METHOD(return_type, method_name) \
   JNIEXPORT return_type JNICALL              \
@@ -26,4 +27,10 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
 
   LOGI("nativeRunX");
   return android_main(8, argv, envp);
+}
+
+JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject obj) {
+  char *fp = vrxGetFramebuffer();
+  LOGI("Framebuffer @%p", fp);
+  return (jint)fp;
 }
