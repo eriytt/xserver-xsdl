@@ -18,6 +18,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
 		  "-nopn",
 		  "-nolisten", "unix",
 		  "-screen", "1024x1024x24",
+		  "-exec", "/data/data/com.towersmatrix.vrx/files/usr/bin/xhost +",
 		  0 };
   if (setenv("SECURE_STORAGE_DIR", "/data/data/com.towersmatrix.vrx/files", 1))
     {
@@ -26,7 +27,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
     }
 
   LOGI("nativeRunX");
-  return android_main(8, argv, envp);
+  return android_main((sizeof(argv) / sizeof(char*)) - 1, argv, envp);
 }
 
 JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject obj) {
