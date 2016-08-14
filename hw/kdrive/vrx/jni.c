@@ -10,7 +10,7 @@ extern char *vrxGetFramebuffer(void);
   JNIEXPORT return_type JNICALL              \
       Java_com_towersmatrix_vrx_xserver_VRXServer_##method_name
 
-JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
+JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject thiz, jstring j_filesDirectory) {
   char *envp[] = { NULL };
   char *argv[] = {"xserver-vrx",
 		  "-nolock",
@@ -20,7 +20,10 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
 		  "-screen", "1024x1024x24",
 		  "-exec", "/data/data/com.towersmatrix.vrx/files/usr/bin/xhost +",
 		  0 };
-  if (setenv("SECURE_STORAGE_DIR", "/data/data/com.towersmatrix.vrx/files", 1))
+		
+  jboolean iscopy;
+  const char *filesDirectory = (*env)->GetStringUTFChars(env, j_filesDirectory, &iscopy);
+  if (setenv("SECURE_STORAGE_DIR", filesDirectory, 1))
     {
       LOGE("Failed to set base data dir in environment: %s", strerror(errno));
       return errno;
@@ -30,7 +33,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject obj) {
   return android_main((sizeof(argv) / sizeof(char*)) - 1, argv, envp);
 }
 
-JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject obj) {
+JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject thiz) {
   char *fp = vrxGetFramebuffer();
   LOGI("Framebuffer @%p", fp);
   return (jint)fp;
