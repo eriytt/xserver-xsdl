@@ -43,6 +43,8 @@ stamp-h?
 symlink-tree
 texinfo.tex
 ylwrap
+android/armeabi-v7a/xcb-proto-1.11/
+android/x86/xcb-proto-1.11/
 
 #	Do not edit the following section
 # 	Edit Compile Debug Document Distribute

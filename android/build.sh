@@ -600,7 +600,6 @@ ln -sf ../$PKGDIR/include/X11/Xdmcp.h X11/
 
 # =========== xcbproto ===========
 [ -e xcb-proto-1.11 ] || {
-#PKGURL=https://cgit.freedesktop.org/xcb/proto/snapshot/proto-1.8.tar.gz
 PKGURL=https://xcb.freedesktop.org/dist/xcb-proto-1.11.tar.gz
 PKGDIR=`basename --suffix=.tar.gz $PKGURL`
 echo $PKGDIR: $PKGURL
