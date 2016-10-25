@@ -599,8 +599,9 @@ ln -sf ../$PKGDIR/include/X11/Xdmcp.h X11/
 } || exit 1
 
 # =========== xcbproto ===========
-[ -e proto-1.8 ] || {
-PKGURL=https://cgit.freedesktop.org/xcb/proto/snapshot/proto-1.8.tar.gz
+[ -e xcb-proto-1.11 ] || {
+#PKGURL=https://cgit.freedesktop.org/xcb/proto/snapshot/proto-1.8.tar.gz
+PKGURL=https://xcb.freedesktop.org/dist/xcb-proto-1.11.tar.gz
 PKGDIR=`basename --suffix=.tar.gz $PKGURL`
 echo $PKGDIR: $PKGURL
 [ -e ../$PKGDIR.tar.gz ] || curl $PKGURL -o ../$PKGDIR.tar.gz || rm ../$PKGDIR.tar.gz
@@ -608,10 +609,10 @@ tar xvzf ../$PKGDIR.tar.gz || exit 1
 cd $PKGDIR
 
 $BUILDDIR/setCrossEnvironment.sh \
-./autogen.sh --host=$TARGET_HOST \
+./autogen.sh --host=$TARGET_HOST --prefix=$BUILDDIR/usr \
 || exit 1
 $BUILDDIR/setCrossEnvironment.sh \
-make -j$NCPU V=1 2>&1 || exit 1
+make -j$NCPU V=1 install 2>&1 || exit 1
 cd $BUILDDIR
 } || exit 1
 
@@ -632,6 +633,7 @@ autoreconf -v --install \
 env CFLAGS="-isystem$BUILDDIR \
 -include strings.h -DSO_REUSEADDR=1" \
 LDFLAGS="-L$BUILDDIR" \
+PKG_CONFIG_LIBDIR=$BUILDDIR/usr/lib/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig \
 $BUILDDIR/setCrossEnvironment.sh \
 ./configure --disable-xkb --disable-xv \
 --host=$TARGET_HOST \
@@ -1273,6 +1275,7 @@ echo $PKGDIR: $PKGURL
 [ -e ../$PKGDIR.tar.gz ] || curl -L $PKGURL -o ../$PKGDIR.tar.gz || rm ../$PKGDIR.tar.gz
 tar xvzf ../$PKGDIR.tar.gz || exit 1
 cd $PKGDIR
+touch README
 
 env CFLAGS="-isystem$BUILDDIR -Drpl_malloc=malloc -Os" \
 LDFLAGS="-L$BUILDDIR" \
@@ -1294,6 +1297,7 @@ sh -c '$STRIP xsel'
 cd pie
 tar xvzf ../../$PKGDIR.tar.gz || exit 1
 cd $PKGDIR
+touch README
 
 env CFLAGS="-isystem$BUILDDIR -Drpl_malloc=malloc -Os" \
 LDFLAGS="-pie -L$BUILDDIR" \
