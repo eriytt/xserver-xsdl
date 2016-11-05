@@ -1112,6 +1112,90 @@ ln -sf $PKGDIR/src/.libs/libXmu.a ./
 ln -sf ../$PKGDIR/include/X11/Xmu X11/
 } || exit 1
 
+# =========== libXfixes =========
+[ -e libXcomposite.a ] || {
+    PKGURL=https://cgit.freedesktop.org/xorg/lib/libXfixes/snapshot/libXfixes-5.0.3.tar.gz
+PKGDIR=`basename --suffix=.tar.gz $PKGURL`
+echo $PKGDIR: $PKGURL
+[ -e ../$PKGDIR.tar.gz ] || curl $PKGURL -o ../$PKGDIR.tar.gz || rm ../$PKGDIR.tar.gz
+tar xvzf ../$PKGDIR.tar.gz || exit 1
+cd $PKGDIR
+
+[ -e configure ] || \
+autoreconf -v --install \
+|| exit 1
+
+# env CFLAGS="-isystem$BUILDDIR \
+# -include strings.h -DSO_REUSEADDR=1" \
+# LDFLAGS="-L$BUILDDIR" \
+# LIBS="-lxcb -lXau -lXdmcp -landroid_support -lSM -lICE" \
+env CFLAGS="-isystem$BUILDDIR" \
+LDFLAGS="-L$BUILDDIR" \
+LIBS="-lxcb -lXau -lXdmcp -landroid_support" \
+$BUILDDIR/setCrossEnvironment.sh \
+./configure \
+--host=$TARGET_HOST \
+--prefix=$TARGET_DIR/usr \
+|| exit 1
+
+cp -f `which libtool` ./
+
+$BUILDDIR/setCrossEnvironment.sh \
+sh -c 'ln -sf $CC gcc'
+
+env PATH=`pwd`:$PATH \
+$BUILDDIR/setCrossEnvironment.sh \
+make -j$NCPU V=1 2>&1 || exit 1
+
+cd $BUILDDIR
+ln -sf $PKGDIR/src/.libs/libXfixes.a ./
+for F in $PKGDIR/include/X11/extensions/*.h ; do
+    ln -sf ../$F X11/extensions/
+done
+} || exit 1
+
+# =========== libXcomposite =========
+[ -e libXcomposite.a ] || {
+PKGURL=https://cgit.freedesktop.org/xorg/lib/libXcomposite/snapshot/libXcomposite-0.4.4.tar.gz
+PKGDIR=`basename --suffix=.tar.gz $PKGURL`
+echo $PKGDIR: $PKGURL
+[ -e ../$PKGDIR.tar.gz ] || curl $PKGURL -o ../$PKGDIR.tar.gz || rm ../$PKGDIR.tar.gz
+tar xvzf ../$PKGDIR.tar.gz || exit 1
+cd $PKGDIR
+
+[ -e configure ] || \
+autoreconf -v --install \
+|| exit 1
+
+# env CFLAGS="-isystem$BUILDDIR \
+# -include strings.h -DSO_REUSEADDR=1" \
+# LDFLAGS="-L$BUILDDIR" \
+# LIBS="-lxcb -lXau -lXdmcp -landroid_support -lSM -lICE" \
+env CFLAGS="-isystem$BUILDDIR" \
+LDFLAGS="-L$BUILDDIR" \
+LIBS="-lxcb -lXau -lXdmcp -landroid_support" \
+$BUILDDIR/setCrossEnvironment.sh \
+./configure \
+--host=$TARGET_HOST \
+--prefix=$TARGET_DIR/usr \
+|| exit 1
+
+cp -f `which libtool` ./
+
+$BUILDDIR/setCrossEnvironment.sh \
+sh -c 'ln -sf $CC gcc'
+
+env PATH=`pwd`:$PATH \
+$BUILDDIR/setCrossEnvironment.sh \
+make -j$NCPU V=1 2>&1 || exit 1
+
+cd $BUILDDIR
+ln -sf $PKGDIR/src/.libs/libXcomposite.a ./
+for F in $PKGDIR/include/X11/extensions/*.h ; do
+    ln -sf ../$F X11/extensions/
+done
+} || exit 1
+
 # =========== xhost binary ==========
 
 [ -e xhost -a -e pie/xhost ] || {
