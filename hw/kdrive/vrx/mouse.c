@@ -32,10 +32,13 @@
 #include "scrnintstr.h"
 #include "kdrive.h"
 
+KdPointerInfo *vrxMouse;
+
 static Status
-MouseInit (KdPointerInfo *pi)
+VRXMouseInit (KdPointerInfo *pi)
 {
-    return Success;
+  vrxMouse = pi;
+  return Success;
 }
 
 static Status
@@ -59,7 +62,7 @@ MouseFini (KdPointerInfo *pi)
 
 KdPointerDriver FakePointerDriver = {
     "fake",
-    MouseInit,
+    VRXMouseInit,
     MouseEnable,
     MouseDisable,
     MouseFini,

@@ -27,12 +27,14 @@
 #include <X11/keysym.h>
 
 #define FAKE_WIDTH  2
+KdKeyboardInfo *vrxKbd;
 
 static Status
-FakeKeyboardInit (KdKeyboardInfo *ki)
+VRXKeyboardInit (KdKeyboardInfo *ki)
 {
     ki->minScanCode = 8;
     ki->maxScanCode = 255;
+    vrxKbd = ki;
     return Success;
 }
 
@@ -65,7 +67,7 @@ FakeKeyboardBell (KdKeyboardInfo *ki, int volume, int frequency, int duration)
 
 KdKeyboardDriver FakeKeyboardDriver = {
     "fake",
-    FakeKeyboardInit,
+    VRXKeyboardInit,
     FakeKeyboardEnable,
     FakeKeyboardLeds,
     FakeKeyboardBell,
