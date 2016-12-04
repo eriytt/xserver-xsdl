@@ -24,8 +24,13 @@
 #include <kdrive-config.h>
 #endif
 #include "vrx.h"
+#include "vrxexport.h"
 
 extern int KdTsPhyScreen;
+
+OnCreateWindowFunc wcreate = 0;
+OnDestroyWindowFunc wdestroy = 0;
+void *callback_arg = 0;
 
 Bool
 fakeInitialize (KdCardInfo *card, FakePriv *priv)
@@ -131,6 +136,7 @@ fakeScreenInit (KdScreenInfo *screen)
 		free(scrpriv);
 		return FALSE;
 	}
+
 	return TRUE;
 }
 	
@@ -381,6 +387,55 @@ fakeCreateColormap (ColormapPtr pmap)
 	return fbInitializeColormap (pmap);
 }
 
+
+
+static Bool
+vrxCreateWindow (WindowPtr pWin)
+{
+  Bool ret = fbCreateWindow(pWin);
+
+  ScreenPtr screen = pWin->drawable.pScreen;
+  WindowPtr root = screen->root;
+
+  LOGI("CreateWindow %p, parent %p, root %p", pWin, pWin->parent, root);
+
+  /* Ignore non top level windows */
+  if (pWin->parent != root || pWin == root )
+    return;
+
+  if (ret && wcreate)
+    wcreate(pWin, callback_arg);
+  return ret;
+}
+
+
+ReparentWindowProcPtr oldReparentWindow;
+static void
+vrxReparentWindow(WindowPtr pWin, WindowPtr priorParent)
+{
+  LOGI("Reparent %p, new parent %p, prior parent %p", pWin, pWin->parent, priorParent);
+  WindowPtr root = pWin->drawable.pScreen->root;
+
+  if (priorParent == root && pWin->parent != root)
+    wdestroy(pWin, callback_arg);
+  if (oldReparentWindow)
+    oldReparentWindow(pWin, priorParent);
+}
+
+
+static DestroyWindowProcPtr oldDestroyWindow;
+static Bool
+vrxDestroyWindow (WindowPtr pWin)
+{
+  LOGI("Hooking Destroy Window");
+  if (wdestroy)
+    wdestroy(pWin, callback_arg);
+  if (oldDestroyWindow)
+    return oldDestroyWindow(pWin);
+  return TRUE;
+}
+
+
 Bool
 fakeInitScreen (ScreenPtr pScreen)
 {
@@ -388,7 +443,15 @@ fakeInitScreen (ScreenPtr pScreen)
 	KdTsPhyScreen = pScreen->myNum;
 #endif
 
+	pScreen->CreateWindow = vrxCreateWindow;
+	LOGI("Wrapping DestroyWindow %p, fbDestroyWindow = %p", pScreen->DestroyWindow, fbDestroyWindow);
+	oldDestroyWindow = pScreen->DestroyWindow;
+	pScreen->DestroyWindow = vrxDestroyWindow;
 	pScreen->CreateColormap = fakeCreateColormap;
+
+	oldReparentWindow = pScreen->ReparentWindow;
+	pScreen->ReparentWindow = vrxReparentWindow;
+	LOGI("Wrapping ReparentWindow from %p to %p", oldReparentWindow, vrxReparentWindow);
 	return TRUE;
 }
 
@@ -483,4 +546,26 @@ vrxGetFramebuffer(void)
     return 0;
 
   return screeninfo->fb.frameBuffer;
+}
+
+void*
+VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret)
+{
+  WindowPtr pWin = (WindowPtr)w;
+  ScreenPtr	pScreen = pWin->drawable.pScreen;
+  PixmapPtr	pWinPixmap = (*pScreen->GetWindowPixmap) (pWin);
+
+  *wret = pWinPixmap->drawable.width;
+  *hret = pWinPixmap->drawable.height;
+  return pWinPixmap->devPrivate.ptr;
+}
+
+void
+VRXSetCallbacks(OnCreateWindowFunc wCreate,
+		OnDestroyWindowFunc wDestroy,
+		void *arg)
+{
+  wcreate = wCreate;
+  wdestroy = wDestroy;
+  callback_arg = arg;
 }
