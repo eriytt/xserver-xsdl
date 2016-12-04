@@ -418,6 +418,8 @@ vrxReparentWindow(WindowPtr pWin, WindowPtr priorParent)
 
   if (priorParent == root && pWin->parent != root)
     wdestroy(pWin, callback_arg);
+  if (priorParent != root && pWin->parent == root)
+    wcreate(pWin, callback_arg);
   if (oldReparentWindow)
     oldReparentWindow(pWin, priorParent);
 }
