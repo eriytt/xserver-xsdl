@@ -401,7 +401,7 @@ vrxCreateWindow (WindowPtr pWin)
 
   /* Ignore non top level windows */
   if (pWin->parent != root || pWin == root )
-    return;
+    return ret;
 
   if (ret && wcreate)
     wcreate(pWin, callback_arg);
@@ -413,15 +413,25 @@ ReparentWindowProcPtr oldReparentWindow;
 static void
 vrxReparentWindow(WindowPtr pWin, WindowPtr priorParent)
 {
+  ScreenPtr pScreen;
+  WindowPtr root;
+
   LOGI("Reparent %p, new parent %p, prior parent %p", pWin, pWin->parent, priorParent);
-  WindowPtr root = pWin->drawable.pScreen->root;
+
+  pScreen = pWin->drawable.pScreen;
+  root = pScreen->root;
 
   if (priorParent == root && pWin->parent != root)
     wdestroy(pWin, callback_arg);
   if (priorParent != root && pWin->parent == root)
     wcreate(pWin, callback_arg);
+
   if (oldReparentWindow)
-    oldReparentWindow(pWin, priorParent);
+    {
+      pScreen->ReparentWindow = oldReparentWindow;
+      oldReparentWindow(pWin, priorParent);
+      pScreen->ReparentWindow = vrxReparentWindow;
+    }
 }
 
 
@@ -429,12 +439,15 @@ static DestroyWindowProcPtr oldDestroyWindow;
 static Bool
 vrxDestroyWindow (WindowPtr pWin)
 {
-  LOGI("Hooking Destroy Window");
+  LOGI("Hooking Destroy Window, callback %p, old %p", wdestroy, oldDestroyWindow);
   if (wdestroy)
     wdestroy(pWin, callback_arg);
-  if (oldDestroyWindow)
-    return oldDestroyWindow(pWin);
-  return TRUE;
+
+  ScreenPtr pScreen = pWin->drawable.pScreen;
+  pScreen->DestroyWindow = oldDestroyWindow;
+  Bool ret = oldDestroyWindow(pWin);
+  pScreen->DestroyWindow = vrxDestroyWindow;
+  return ret;
 }
 
 
