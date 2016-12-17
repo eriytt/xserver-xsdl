@@ -20,6 +20,8 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <pthread.h>
+
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
 #endif
@@ -52,12 +54,18 @@ FakeFini (void)
 {
 }
 
+pthread_mutex_t inputLock = PTHREAD_MUTEX_INITIALIZER;
+
 static void
 VRXPollInput(void)
 {
   VRXInputEvent *head;
+  VRXInputEvent *oldHead;
+
+  pthread_mutex_lock(&inputLock);
   head = vrx_event_queue;
   vrx_event_queue = 0;
+  pthread_mutex_unlock(&inputLock);
 
   while (head != 0)
     {
@@ -80,8 +88,9 @@ VRXPollInput(void)
 	  LOGE("Unknown input event type %d", head->type);
 	}
 
+      oldHead = head;
       head = head->next;
-      free(head);
+      free(oldHead);
     }
 }
 

@@ -166,7 +166,7 @@ typedef struct _vrx_input_event {
   struct _vrx_input_event *next;
 } VRXInputEvent;
 
-extern VRXInputEvent *vrx_event_queue;
+extern volatile VRXInputEvent *vrx_event_queue;
 extern KdKeyboardInfo *vrxKbd;
 extern KdPointerInfo *vrxMouse;
 

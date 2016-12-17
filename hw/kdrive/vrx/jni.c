@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <jni.h>
+#include <pthread.h>
 
 extern int android_main(int argc, char *argv[], char *envp[]);
 extern char *vrxGetFramebuffer(void);
@@ -41,6 +42,8 @@ JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject thiz) {
   return (jint)fp;
 }
 
+extern pthread_mutex_t inputLock;
+
 JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jboolean down) {
   LOGI("Enqueueing key event, scancode %d, down = %d", scancode, down);
 
@@ -56,15 +59,18 @@ JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jbool
   new_event->event.key.down = down;
   new_event->next = 0;
 
+  pthread_mutex_lock(&inputLock);
   if (vrx_event_queue == 0)
     {
       vrx_event_queue = new_event;
+      pthread_mutex_unlock(&inputLock);
       return;
     }
 
   VRXInputEvent *tail = vrx_event_queue;
   while (tail->next != 0) tail = tail->next;
   tail->next = new_event;
+  pthread_mutex_unlock(&inputLock);
 }
 
 JNI_METHOD(void, nativeMouseMotionEvent)(JNIEnv *env, jobject thiz, jint x, jint y) {
@@ -82,13 +88,16 @@ JNI_METHOD(void, nativeMouseMotionEvent)(JNIEnv *env, jobject thiz, jint x, jint
   new_event->event.motion.y = y;
   new_event->next = 0;
 
+  pthread_mutex_lock(&inputLock);
   if (vrx_event_queue == 0)
     {
       vrx_event_queue = new_event;
+      pthread_mutex_unlock(&inputLock);
       return;
     }
 
   VRXInputEvent *tail = vrx_event_queue;
   while (tail->next != 0) tail = tail->next;
   tail->next = new_event;
+  pthread_mutex_unlock(&inputLock);
 }
