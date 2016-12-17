@@ -32,7 +32,7 @@ KdKeyboardInfo *vrxKbd;
 static Status
 VRXKeyboardInit (KdKeyboardInfo *ki)
 {
-    ki->minScanCode = 8;
+    ki->minScanCode = 0;
     ki->maxScanCode = 255;
     vrxKbd = ki;
     return Success;

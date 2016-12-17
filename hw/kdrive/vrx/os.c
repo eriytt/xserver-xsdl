@@ -52,12 +52,45 @@ FakeFini (void)
 {
 }
 
-KdOsFuncs   FakeOsFuncs = {
+static void
+VRXPollInput(void)
+{
+  VRXInputEvent *head;
+  head = vrx_event_queue;
+  vrx_event_queue = 0;
+
+  while (head != 0)
+    {
+      switch(head->type)
+	{
+	case VRX_E_KEY:
+	  LOGI("Really enqueuing key event");
+	  KdEnqueueKeyboardEvent(vrxKbd,
+				 (unsigned char)(head->event.key.scancode),
+				 (unsigned char)(!head->event.key.down));
+	  break;
+	case VRX_E_MOTION:
+	  KdEnqueuePointerEvent(vrxMouse,
+				0,
+				head->event.motion.x,
+				head->event.motion.y,
+				0);
+	  break;
+	default:
+	  LOGE("Unknown input event type %d", head->type);
+	}
+
+      head = head->next;
+      free(head);
+    }
+}
+
+KdOsFuncs   VRXOsFuncs = {
     FakeInit,
     FakeEnable,
     FakeSpecialKey,
     FakeDisable,
     FakeFini,
-    0
+    VRXPollInput
 };
 

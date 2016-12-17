@@ -43,10 +43,52 @@ JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject thiz) {
 
 JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jboolean down) {
   LOGI("Enqueueing key event, scancode %d, down = %d", scancode, down);
-  KdEnqueueKeyboardEvent(vrxKbd, (unsigned char)scancode, (unsigned char)(!down));
+
+  VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
+  if (new_event == 0)
+    {
+      LOGE("Failed to enque input event: %s", strerror(errno));
+      return;
+    }
+
+  new_event->type = VRX_E_KEY;
+  new_event->event.key.scancode = scancode;
+  new_event->event.key.down = down;
+  new_event->next = 0;
+
+  if (vrx_event_queue == 0)
+    {
+      vrx_event_queue = new_event;
+      return;
+    }
+
+  VRXInputEvent *tail = vrx_event_queue;
+  while (tail->next != 0) tail = tail->next;
+  tail->next = new_event;
 }
 
 JNI_METHOD(void, nativeMouseMotionEvent)(JNIEnv *env, jobject thiz, jint x, jint y) {
   LOGI("Enqueueing motion event, x=%d, y=%d", x, y);
-  KdEnqueuePointerEvent(vrxMouse, 0, x, y, 0);
+
+  VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
+  if (new_event == 0)
+    {
+      LOGE("Failed to enque input event: %s", strerror(errno));
+      return;
+    }
+
+  new_event->type = VRX_E_MOTION;
+  new_event->event.motion.x = x;
+  new_event->event.motion.y = y;
+  new_event->next = 0;
+
+  if (vrx_event_queue == 0)
+    {
+      vrx_event_queue = new_event;
+      return;
+    }
+
+  VRXInputEvent *tail = vrx_event_queue;
+  while (tail->next != 0) tail = tail->next;
+  tail->next = new_event;
 }

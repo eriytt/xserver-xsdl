@@ -131,7 +131,7 @@ extern KdPointerDriver FakePointerDriver;
 
 extern KdKeyboardDriver	FakeKeyboardDriver;
 
-extern KdOsFuncs   FakeOsFuncs;
+extern KdOsFuncs   VRXOsFuncs;
 
 #include <android/log.h>
 #define VRX_LOG_TAG "VRXserver:"
@@ -140,5 +140,34 @@ extern KdOsFuncs   FakeOsFuncs;
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, VRX_LOG_TAG __FILE__, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, VRX_LOG_TAG __FILE__, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, VRX_LOG_TAG __FILE__, __VA_ARGS__)
+
+typedef struct {
+  int scancode;
+  Bool down;
+} VRXKeyEvent;
+
+typedef struct {
+  int x, y;
+} VRXMotionEvent;
+
+typedef enum {
+  VRX_E_KEY,
+  VRX_E_MOTION
+} VRXEventType;
+
+typedef union {
+  VRXKeyEvent key;
+  VRXMotionEvent motion;
+} VRXEvent;
+
+typedef struct _vrx_input_event {
+  VRXEventType type;
+  VRXEvent event;
+  struct _vrx_input_event *next;
+} VRXInputEvent;
+
+extern VRXInputEvent *vrx_event_queue;
+extern KdKeyboardInfo *vrxKbd;
+extern KdPointerInfo *vrxMouse;
 
 #endif /* _FBDEV_H_ */

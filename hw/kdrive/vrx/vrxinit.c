@@ -91,7 +91,7 @@ void
 OsVendorInit (void)
 {
     LOGI("OsVendorInit");
-    KdOsInit (&FakeOsFuncs);
+    KdOsInit (&VRXOsFuncs);
 }
 
 KdCardFuncs	fakeFuncs = {

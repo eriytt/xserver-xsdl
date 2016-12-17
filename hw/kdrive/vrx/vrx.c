@@ -31,6 +31,7 @@ extern int KdTsPhyScreen;
 OnCreateWindowFunc wcreate = 0;
 OnDestroyWindowFunc wdestroy = 0;
 void *callback_arg = 0;
+VRXInputEvent *vrx_event_queue = 0;
 
 Bool
 fakeInitialize (KdCardInfo *card, FakePriv *priv)
