@@ -45,7 +45,7 @@ JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject thiz) {
 extern pthread_mutex_t inputLock;
 
 JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jboolean down) {
-  LOGI("Enqueueing key event, scancode %d, down = %d", scancode, down);
+  //LOGI("Enqueueing key event, scancode %d, down = %d", scancode, down);
 
   VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
   if (new_event == 0)
@@ -74,7 +74,7 @@ JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jbool
 }
 
 JNI_METHOD(void, nativeMouseMotionEvent)(JNIEnv *env, jobject thiz, jint x, jint y) {
-  LOGI("Enqueueing motion event, x=%d, y=%d", x, y);
+  //LOGI("Enqueueing motion event, x=%d, y=%d", x, y);
 
   VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
   if (new_event == 0)

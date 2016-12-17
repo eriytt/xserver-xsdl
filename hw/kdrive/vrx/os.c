@@ -72,14 +72,14 @@ VRXPollInput(void)
       switch(head->type)
 	{
 	case VRX_E_KEY:
-	  LOGI("Really enqueuing key event");
+	  //LOGI("Really enqueuing key event");
 	  KdEnqueueKeyboardEvent(vrxKbd,
 				 (unsigned char)(head->event.key.scancode),
 				 (unsigned char)(!head->event.key.down));
 	  break;
 	case VRX_E_MOTION:
 	  KdEnqueuePointerEvent(vrxMouse,
-				0,
+				KD_MOUSE_DELTA,
 				head->event.motion.x,
 				head->event.motion.y,
 				0);
