@@ -20,7 +20,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject thiz, jstring j_filesDirectory
 		  "-noreset",
 		  "-nopn",
 		  "-nolisten", "unix",
-		  "-screen", "1024x1024x24",
+		  "-screen", "65536x65536x24",
 		  "-exec", "/data/data/com.towersmatrix.vrx/files/usr/bin/xhost +",
 		  0 };
 		
@@ -34,12 +34,6 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject thiz, jstring j_filesDirectory
 
   LOGI("nativeRunX");
   return android_main((sizeof(argv) / sizeof(char*)) - 1, argv, envp);
-}
-
-JNI_METHOD(jint, nativeGetFrameBufferPointer)(JNIEnv *env, jobject thiz) {
-  char *fp = vrxGetFramebuffer();
-  LOGI("Framebuffer @%p", fp);
-  return (jint)fp;
 }
 
 extern pthread_mutex_t inputLock;

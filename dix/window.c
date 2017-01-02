@@ -2782,7 +2782,6 @@ MapWindow(WindowPtr pWin, ClientPtr client)
 	if (pScreen->PostValidateTree)
 	    (*pScreen->PostValidateTree)(NullWindow, pWin, VTMap);
 	RegionNull(&temp);
-	RegionCopy(&temp, &pWin->clipList);
 	(*pScreen->WindowExposures) (pWin, &temp, NullRegion);
 	RegionUninit(&temp);
     }

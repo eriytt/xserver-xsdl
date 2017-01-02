@@ -165,10 +165,7 @@ fakeMapFramebuffer (KdScreenInfo *screen)
 	KdPointerMatrix		m;
 	FakePriv			*priv = screen->card->driver;
 
-	if (scrpriv->randr != RR_Rotate_0)
-		scrpriv->shadow = TRUE;
-	else
-		scrpriv->shadow = FALSE;
+	scrpriv->shadow = FALSE;
 	
 	KdComputePointerMatrix (&m, scrpriv->randr, screen->width, screen->height);
 	
@@ -176,7 +173,7 @@ fakeMapFramebuffer (KdScreenInfo *screen)
 	
 	priv->bytes_per_line = ((screen->width * screen->fb.bitsPerPixel + 31) >> 5) << 2;
 	free(priv->base);
-	priv->base = malloc (priv->bytes_per_line * screen->height);
+	priv->base = 0;
 	
 	if (scrpriv->shadow)
 	{
@@ -398,10 +395,10 @@ vrxCreateWindow (WindowPtr pWin)
   ScreenPtr screen = pWin->drawable.pScreen;
   WindowPtr root = screen->root;
 
-  LOGI("CreateWindow %p, parent %p, root %p", pWin, pWin->parent, root);
+  LOGI("CreateWindow %p (%d), parent %p, root %p", pWin, pWin->drawable.id, pWin->parent, root);
 
   /* Ignore non top level windows */
-  if (pWin->parent != root || pWin == root )
+  if (pWin->parent != root || pWin == root)
     return ret;
 
   if (ret && wcreate)
@@ -550,22 +547,9 @@ fakePutColors (ScreenPtr pScreen, int n, xColorItem *pdefs)
 {
 }
 
-unsigned char *
-vrxGetFramebuffer(void)
-{
-  KdCardInfo *cardinfo = KdCardInfoLast();
-  if (!cardinfo)
-    return 0;
-
-  KdScreenInfo *screeninfo = cardinfo->screenList;
-  if (!screeninfo)
-    return 0;
-
-  return screeninfo->fb.frameBuffer;
-}
-
 void*
-VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret)
+VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
+		   unsigned int *mapped)
 {
   WindowPtr pWin = (WindowPtr)w;
   ScreenPtr	pScreen = pWin->drawable.pScreen;
@@ -573,6 +557,7 @@ VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hre
 
   *wret = pWinPixmap->drawable.width;
   *hret = pWinPixmap->drawable.height;
+  *mapped = pWin->mapped;
   return pWinPixmap->devPrivate.ptr;
 }
 

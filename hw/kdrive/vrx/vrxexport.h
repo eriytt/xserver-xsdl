@@ -6,4 +6,5 @@ typedef void (*OnDestroyWindowFunc)(struct WindowHandle *, void *arg);
 void VRXSetCallbacks(OnCreateWindowFunc wCreate,
 		     OnDestroyWindowFunc wDestroy,
 		     void *arg);
-void *VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret);
+void *VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
+			 unsigned int *mapped);
