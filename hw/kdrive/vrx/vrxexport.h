@@ -6,7 +6,6 @@ typedef void (*OnDestroyWindowFunc)(struct WindowHandle *, void *arg);
 typedef struct {
   short int root_x, root_y;
   short int win_x, win_y;
-  int inside;
 } QueryPointerReturn;
 
 typedef QueryPointerReturn (*QueryPointerFunc)(struct WindowHandle *, void *arg);

@@ -5097,8 +5097,7 @@ ProcUngrabKeyboard(ClientPtr client)
 
 void vrxQueryPointer(WindowPtr pWin,
 		     INT16 *root_x, INT16 *root_y,
-		     INT16 *win_x, INT16 *win_y,
-		     int *inside);
+		     INT16 *win_x, INT16 *win_y);
 
 /**
  * Server-side protocol handling for QueryPointer request.
@@ -5115,7 +5114,6 @@ ProcQueryPointer(ClientPtr client)
     DeviceIntPtr keyboard;
     SpritePtr pSprite;
     int rc;
-    int inside;
     int offset_x = 0, offset_y = 0;
     REQUEST(xResourceReq);
     REQUEST_SIZE_MATCH(xResourceReq);
@@ -5145,33 +5143,18 @@ ProcQueryPointer(ClientPtr client)
 	offset_x += t->origin.x;
 	offset_y += t->origin.y;
       }
-    vrxQueryPointer(t, &rep.rootX, &rep.rootY, &rep.winX, &rep.winY, &inside);
+    vrxQueryPointer(t, &rep.rootX, &rep.rootY, &rep.winX, &rep.winY);
     rep.winX -= offset_x;
     rep.winY -= offset_y;
 
-    /* rep.rootX = pSprite->hot.x; */
-    /* rep.rootY = pSprite->hot.y; */
     rep.sameScreen = xTrue;
-    rep.child =  None; // TODO: find the child of pWin that contains the pointer if any
-                       //       mind the stacking order
-    /* if (pSprite->hot.pScreen == pWin->drawable.pScreen) */
-    /* { */
-    /* 	rep.sameScreen = xTrue; */
-    /* 	rep.winX = pSprite->hot.x - pWin->drawable.x; */
-    /* 	rep.winY = pSprite->hot.y - pWin->drawable.y; */
-    /* 	for (t = pSprite->win; t; t = t->parent) */
-    /* 	    if (t->parent == pWin) */
-    /* 	    { */
-    /* 		rep.child = t->drawable.id; */
-    /* 		break; */
-    /* 	    } */
-    /* } */
-    /* else */
-    /* { */
-    /* 	rep.sameScreen = xFalse; */
-    /* 	rep.winX = 0; */
-    /* 	rep.winY = 0; */
-    /* } */
+    rep.child =  None;
+    for (t = pSprite->win; t; t = t->parent)
+      if (t->parent == pWin)
+	{
+	  rep.child = t->drawable.id;
+	  break;
+	}
 
 #ifdef PANORAMIX
     if(!noPanoramiXExtension) {

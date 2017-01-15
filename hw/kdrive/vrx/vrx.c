@@ -554,8 +554,7 @@ fakePutColors (ScreenPtr pScreen, int n, xColorItem *pdefs)
 
 void vrxQueryPointer(WindowPtr pWin,
 		     INT16 *root_x, INT16 *root_y,
-		     INT16 *win_x, INT16 *win_y,
-		     int *inside)
+		     INT16 *win_x, INT16 *win_y)
 {
   if (qpointer)
     {
@@ -565,7 +564,6 @@ void vrxQueryPointer(WindowPtr pWin,
       *root_y = ret.root_y;
       *win_x = ret.win_x;
       *win_y = ret.win_y;
-      *inside = ret.inside;
     }
   else
     {
@@ -573,7 +571,6 @@ void vrxQueryPointer(WindowPtr pWin,
       *root_y = 0;
       *win_x = 0;
       *win_y = 0;
-      *inside = 0;
     }
 }
 
