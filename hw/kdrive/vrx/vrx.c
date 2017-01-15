@@ -30,6 +30,7 @@ extern int KdTsPhyScreen;
 
 OnCreateWindowFunc wcreate = 0;
 OnDestroyWindowFunc wdestroy = 0;
+QueryPointerFunc qpointer = 0;
 void *callback_arg = 0;
 volatile VRXInputEvent *vrx_event_queue = 0;
 
@@ -547,6 +548,31 @@ fakePutColors (ScreenPtr pScreen, int n, xColorItem *pdefs)
 {
 }
 
+void vrxQueryPointer(WindowPtr pWin,
+		     int *root_x, int *root_y,
+		     int *win_x, int *win_y,
+		     int *inside)
+{
+  if (qpointer)
+    {
+      QueryPointerReturn ret;
+      ret = qpointer(pWin, callback_arg);
+      *root_x = ret.root_x;
+      *root_y = ret.root_y;
+      *win_x = ret.win_x;
+      *win_y = ret.win_y;
+      *inside = ret.inside;
+    }
+  else
+    {
+      *root_x = 0;
+      *root_y = 0;
+      *win_x = 0;
+      *win_y = 0;
+      *inside = 0;
+    }
+}
+
 void*
 VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
 		   unsigned int *mapped)
@@ -564,9 +590,11 @@ VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hre
 void
 VRXSetCallbacks(OnCreateWindowFunc wCreate,
 		OnDestroyWindowFunc wDestroy,
+		QueryPointerFunc qPointer,
 		void *arg)
 {
   wcreate = wCreate;
   wdestroy = wDestroy;
+  qpointer = qPointer;
   callback_arg = arg;
 }

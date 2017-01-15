@@ -5088,6 +5088,12 @@ ProcUngrabKeyboard(ClientPtr client)
     return Success;
 }
 
+
+void vrxQueryPointer(WindowPtr pWin,
+		     int *root_x, int *root_y,
+		     int *win_x, int *win_y,
+		     int *inside);
+
 /**
  * Server-side protocol handling for QueryPointer request.
  *
@@ -5098,11 +5104,13 @@ int
 ProcQueryPointer(ClientPtr client)
 {
     xQueryPointerReply rep;
-    WindowPtr pWin, t;
+    WindowPtr pWin, t, root;
     DeviceIntPtr mouse = PickPointer(client);
     DeviceIntPtr keyboard;
     SpritePtr pSprite;
     int rc;
+    int inside;
+    int offset_x = 0, offset_y = 0;
     REQUEST(xResourceReq);
     REQUEST_SIZE_MATCH(xResourceReq);
 
@@ -5124,28 +5132,40 @@ ProcQueryPointer(ClientPtr client)
     rep.mask = mouse->button ? (mouse->button->state) : 0;
     rep.mask |= XkbStateFieldFromRec(&keyboard->key->xkbInfo->state);
     rep.length = 0;
-    rep.root = (GetCurrentRootWindow(mouse))->drawable.id;
-    rep.rootX = pSprite->hot.x;
-    rep.rootY = pSprite->hot.y;
-    rep.child = None;
-    if (pSprite->hot.pScreen == pWin->drawable.pScreen)
-    {
-	rep.sameScreen = xTrue;
-	rep.winX = pSprite->hot.x - pWin->drawable.x;
-	rep.winY = pSprite->hot.y - pWin->drawable.y;
-	for (t = pSprite->win; t; t = t->parent)
-	    if (t->parent == pWin)
-	    {
-		rep.child = t->drawable.id;
-		break;
-	    }
-    }
-    else
-    {
-	rep.sameScreen = xFalse;
-	rep.winX = 0;
-	rep.winY = 0;
-    }
+    root = GetCurrentRootWindow(mouse);
+    rep.root = root->drawable.id;
+    for (t = pWin; t->parent != root; t = t->parent)
+      {
+	offset_x += t->origin.x;
+	offset_y += t->origin.y;
+      }
+    vrxQueryPointer(t, &rep.rootX, &rep.rootY, &rep.winX, &rep.winY, &inside);
+    rep.winX -= offset_x;
+    rep.winY -= offset_y;
+
+    /* rep.rootX = pSprite->hot.x; */
+    /* rep.rootY = pSprite->hot.y; */
+    rep.sameScreen = xTrue;
+    rep.child =  None; // TODO: find the child of pWin that contains the pointer if any
+                       //       mind the stacking order
+    /* if (pSprite->hot.pScreen == pWin->drawable.pScreen) */
+    /* { */
+    /* 	rep.sameScreen = xTrue; */
+    /* 	rep.winX = pSprite->hot.x - pWin->drawable.x; */
+    /* 	rep.winY = pSprite->hot.y - pWin->drawable.y; */
+    /* 	for (t = pSprite->win; t; t = t->parent) */
+    /* 	    if (t->parent == pWin) */
+    /* 	    { */
+    /* 		rep.child = t->drawable.id; */
+    /* 		break; */
+    /* 	    } */
+    /* } */
+    /* else */
+    /* { */
+    /* 	rep.sameScreen = xFalse; */
+    /* 	rep.winX = 0; */
+    /* 	rep.winY = 0; */
+    /* } */
 
 #ifdef PANORAMIX
     if(!noPanoramiXExtension) {
