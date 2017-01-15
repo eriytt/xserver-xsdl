@@ -6,6 +6,7 @@
 
 extern int android_main(int argc, char *argv[], char *envp[]);
 extern char *vrxGetFramebuffer(void);
+extern void VRXMouseMotionEvent(int x, int y, int relative);
 extern KdKeyboardInfo *vrxKbd;
 extern KdPointerInfo *vrxMouse;
 
@@ -20,7 +21,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject thiz, jstring j_filesDirectory
 		  "-noreset",
 		  "-nopn",
 		  "-nolisten", "unix",
-		  "-screen", "65536x65536x24",
+		  "-screen", "8192x8192x24",
 		  "-exec", "/data/data/com.towersmatrix.vrx/files/usr/bin/xhost +",
 		  0 };
 		
@@ -69,29 +70,5 @@ JNI_METHOD(void, nativeKeyEvent)(JNIEnv *env, jobject thiz, jint scancode, jbool
 
 JNI_METHOD(void, nativeMouseMotionEvent)(JNIEnv *env, jobject thiz, jint x, jint y) {
   //LOGI("Enqueueing motion event, x=%d, y=%d", x, y);
-
-  VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
-  if (new_event == 0)
-    {
-      LOGE("Failed to enque input event: %s", strerror(errno));
-      return;
-    }
-
-  new_event->type = VRX_E_MOTION;
-  new_event->event.motion.x = x;
-  new_event->event.motion.y = y;
-  new_event->next = 0;
-
-  pthread_mutex_lock(&inputLock);
-  if (vrx_event_queue == 0)
-    {
-      vrx_event_queue = new_event;
-      pthread_mutex_unlock(&inputLock);
-      return;
-    }
-
-  VRXInputEvent *tail = vrx_event_queue;
-  while (tail->next != 0) tail = tail->next;
-  tail->next = new_event;
-  pthread_mutex_unlock(&inputLock);
+  VRXMouseMotionEvent(x, y, 1);
 }

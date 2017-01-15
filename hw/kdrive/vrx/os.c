@@ -79,7 +79,7 @@ VRXPollInput(void)
 	  break;
 	case VRX_E_MOTION:
 	  KdEnqueuePointerEvent(vrxMouse,
-				KD_MOUSE_DELTA,
+				head->event.motion.relative ? KD_MOUSE_DELTA : 0,
 				head->event.motion.x,
 				head->event.motion.y,
 				0);

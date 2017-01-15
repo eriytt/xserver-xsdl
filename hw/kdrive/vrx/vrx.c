@@ -20,6 +20,9 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <errno.h>
+#include <pthread.h>
+
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
 #endif
@@ -31,6 +34,7 @@ extern int KdTsPhyScreen;
 OnCreateWindowFunc wcreate = 0;
 OnDestroyWindowFunc wdestroy = 0;
 QueryPointerFunc qpointer = 0;
+QueryPointerWindowFunc qpointerwindow = 0;
 void *callback_arg = 0;
 volatile VRXInputEvent *vrx_event_queue = 0;
 
@@ -549,8 +553,8 @@ fakePutColors (ScreenPtr pScreen, int n, xColorItem *pdefs)
 }
 
 void vrxQueryPointer(WindowPtr pWin,
-		     int *root_x, int *root_y,
-		     int *win_x, int *win_y,
+		     INT16 *root_x, INT16 *root_y,
+		     INT16 *win_x, INT16 *win_y,
 		     int *inside)
 {
   if (qpointer)
@@ -573,6 +577,13 @@ void vrxQueryPointer(WindowPtr pWin,
     }
 }
 
+WindowPtr vrxGetPointerWindow()
+{
+  if (qpointerwindow)
+    return qpointerwindow(callback_arg);
+  return 0;
+}
+
 void*
 VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
 		   unsigned int *mapped)
@@ -587,14 +598,49 @@ VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hre
   return pWinPixmap->devPrivate.ptr;
 }
 
+extern pthread_mutex_t inputLock;
+
+void
+VRXMouseMotionEvent(int x, int y, int relative)
+{
+  //LOGI("Enqueueing motion event, x=%d, y=%d", x, y);
+  VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
+  if (new_event == 0)
+    {
+      LOGE("Failed to enque input event: %s", strerror(errno));
+      return;
+    }
+
+  new_event->type = VRX_E_MOTION;
+  new_event->event.motion.relative = relative;
+  new_event->event.motion.x = x;
+  new_event->event.motion.y = y;
+  new_event->next = 0;
+
+  pthread_mutex_lock(&inputLock);
+  if (vrx_event_queue == 0)
+    {
+      vrx_event_queue = new_event;
+      pthread_mutex_unlock(&inputLock);
+      return;
+    }
+
+  VRXInputEvent *tail = vrx_event_queue;
+  while (tail->next != 0) tail = tail->next;
+  tail->next = new_event;
+  pthread_mutex_unlock(&inputLock);
+}
+
 void
 VRXSetCallbacks(OnCreateWindowFunc wCreate,
 		OnDestroyWindowFunc wDestroy,
 		QueryPointerFunc qPointer,
+		QueryPointerWindowFunc qPointerWindow,
 		void *arg)
 {
   wcreate = wCreate;
   wdestroy = wDestroy;
   qpointer = qPointer;
+  qpointerwindow = qPointerWindow;
   callback_arg = arg;
 }

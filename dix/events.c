@@ -2740,6 +2740,8 @@ PointInBorderSize(WindowPtr pWin, int x, int y)
     return FALSE;
 }
 
+WindowPtr vrxGetPointerWindow();
+
 /**
  * Traversed from the root window to the window at the position x/y. While
  * traversing, it sets up the traversal history in the spriteTrace array.
@@ -2754,11 +2756,13 @@ PointInBorderSize(WindowPtr pWin, int x, int y)
 WindowPtr
 XYToWindow(SpritePtr pSprite, int x, int y)
 {
-    WindowPtr  pWin;
+    WindowPtr  pWin, root;
     BoxRec		box;
 
     pSprite->spriteTraceGood = 1;	/* root window still there */
-    pWin = RootWindow(pSprite)->firstChild;
+    root = RootWindow(pSprite);
+    pWin = vrxGetPointerWindow();
+
     while (pWin)
     {
 	if ((pWin->mapped) &&
@@ -2795,8 +2799,10 @@ XYToWindow(SpritePtr pSprite, int x, int y)
 	    pSprite->spriteTrace[pSprite->spriteTraceGood++] = pWin;
 	    pWin = pWin->firstChild;
 	}
+	else if (pWin->parent == root)
+	  pWin = 0;
 	else
-	    pWin = pWin->nextSib;
+	  pWin = pWin->nextSib;
     }
     return DeepestSpriteWin(pSprite);
 }
@@ -5090,8 +5096,8 @@ ProcUngrabKeyboard(ClientPtr client)
 
 
 void vrxQueryPointer(WindowPtr pWin,
-		     int *root_x, int *root_y,
-		     int *win_x, int *win_y,
+		     INT16 *root_x, INT16 *root_y,
+		     INT16 *win_x, INT16 *win_y,
 		     int *inside);
 
 /**
