@@ -21,7 +21,7 @@ JNI_METHOD(jint, nativeRunX)(JNIEnv *env, jobject thiz, jstring j_filesDirectory
 		  "-noreset",
 		  "-nopn",
 		  "-nolisten", "unix",
-		  "-screen", "8192x8192x24",
+		  "-screen", "2048x2048x24",
 		  "-exec", "/data/data/com.towersmatrix.vrx/files/usr/bin/xhost +",
 		  0 };
 		

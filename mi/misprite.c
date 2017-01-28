@@ -913,17 +913,18 @@ miSpriteRemoveCursor (DeviceIntPtr pDev, ScreenPtr pScreen)
     miSpriteRegisterBlockHandler(pScreen, pScreenPriv);
     pCursorInfo->pCacheWin = NullWindow;
     miSpriteDisableDamage(pScreen, pScreenPriv);
-    /* if (!miDCRestoreUnderCursor(pDev, */
-    /*                             pScreen, */
-    /*                             pCursorInfo->saved.x1, */
-    /*                             pCursorInfo->saved.y1, */
-    /*                             pCursorInfo->saved.x2 - */
-    /*                             pCursorInfo->saved.x1, */
-    /*                             pCursorInfo->saved.y2 - */
-    /*                             pCursorInfo->saved.y1)) */
-    /* { */
+    /* Comment this call if there is no root window */
+    if (!miDCRestoreUnderCursor(pDev,
+                                pScreen,
+                                pCursorInfo->saved.x1,
+                                pCursorInfo->saved.y1,
+                                pCursorInfo->saved.x2 -
+                                pCursorInfo->saved.x1,
+                                pCursorInfo->saved.y2 -
+                                pCursorInfo->saved.y1))
+    {
         miSpriteIsUp(pCursorInfo);
-    /* } */
+    }
     miSpriteEnableDamage(pScreen, pScreenPriv);
     DamageDrawInternal (pScreen, FALSE);
 }
@@ -955,14 +956,15 @@ miSpriteSaveUnderCursor(DeviceIntPtr pDev, ScreenPtr pScreen)
     y = pCursorInfo->y - (int)pCursor->bits->yhot;
     miSpriteDisableDamage(pScreen, pScreenPriv);
 
-    /* miDCSaveUnderCursor(pDev, */
-    /*                     pScreen, */
-    /*                     pCursorInfo->saved.x1, */
-    /*                     pCursorInfo->saved.y1, */
-    /*                     pCursorInfo->saved.x2 - */
-    /*                     pCursorInfo->saved.x1, */
-    /*                     pCursorInfo->saved.y2 - */
-    /*                     pCursorInfo->saved.y1); */
+    /* Comment this call if there is no root window */
+    miDCSaveUnderCursor(pDev,
+                        pScreen,
+                        pCursorInfo->saved.x1,
+                        pCursorInfo->saved.y1,
+                        pCursorInfo->saved.x2 -
+                        pCursorInfo->saved.x1,
+                        pCursorInfo->saved.y2 -
+                        pCursorInfo->saved.y1);
     SPRITE_DEBUG(("SaveUnderCursor %d\n", pDev->id));
     miSpriteEnableDamage(pScreen, pScreenPriv);
     DamageDrawInternal (pScreen, FALSE);
@@ -998,14 +1000,15 @@ miSpriteRestoreCursor (DeviceIntPtr pDev, ScreenPtr pScreen)
     SPRITE_DEBUG(("RestoreCursor %d\n", pDev->id));
     if (pCursorInfo->checkPixels)
         miSpriteFindColors (pCursorInfo, pScreen);
-    /* if (miDCPutUpCursor(pDev, pScreen, */
-    /*             pCursor, x, y, */
-    /*             pScreenPriv->colors[SOURCE_COLOR].pixel, */
-    /*             pScreenPriv->colors[MASK_COLOR].pixel)) */
-    /* { */
+    /* Comment this call if there is no root window */
+    if (miDCPutUpCursor(pDev, pScreen,
+                pCursor, x, y,
+                pScreenPriv->colors[SOURCE_COLOR].pixel,
+                pScreenPriv->colors[MASK_COLOR].pixel))
+    {
         miSpriteIsUp(pCursorInfo);
         pCursorInfo->pScreen = pScreen;
-    /* } */
+    }
     miSpriteEnableDamage(pScreen, pScreenPriv);
     DamageDrawInternal (pScreen, FALSE);
 }
