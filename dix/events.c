@@ -5138,14 +5138,25 @@ ProcQueryPointer(ClientPtr client)
     rep.length = 0;
     root = GetCurrentRootWindow(mouse);
     rep.root = root->drawable.id;
-    for (t = pWin; t->parent != root; t = t->parent)
+
+    if (pWin != root)
       {
-	offset_x += t->origin.x;
-	offset_y += t->origin.y;
+	for (t = pWin; t->parent != root; t = t->parent)
+	  {
+	    offset_x += t->origin.x;
+	    offset_y += t->origin.y;
+	  }
+	vrxQueryPointer(t, &rep.rootX, &rep.rootY, &rep.winX, &rep.winY);
+	rep.winX -= offset_x;
+	rep.winY -= offset_y;
       }
-    vrxQueryPointer(t, &rep.rootX, &rep.rootY, &rep.winX, &rep.winY);
-    rep.winX -= offset_x;
-    rep.winY -= offset_y;
+    else
+      {
+	rep.rootX = 0;
+	rep.rootY = 0;
+	rep.winX = 0;
+	rep.winY = 0;
+      }
 
     rep.sameScreen = xTrue;
     rep.child =  None;
