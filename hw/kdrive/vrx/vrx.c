@@ -641,3 +641,9 @@ VRXSetCallbacks(OnCreateWindowFunc wCreate,
   qpointerwindow = qPointerWindow;
   callback_arg = arg;
 }
+
+Window getWindowFromHandle(const struct WindowHandle *w)
+{
+  WindowPtr pWin = (WindowPtr)w;
+  return pWin->drawable.id;
+}

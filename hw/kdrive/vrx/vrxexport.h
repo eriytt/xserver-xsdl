@@ -1,3 +1,5 @@
+#include <X11/X.h>
+
 struct WindowHandle;
 
 typedef void (*OnCreateWindowFunc)(struct WindowHandle *, void *arg);
@@ -12,10 +14,13 @@ typedef QueryPointerReturn (*QueryPointerFunc)(struct WindowHandle *, void *arg)
 typedef struct WindowHandle *(*QueryPointerWindowFunc)(void *arg);
 
 void VRXSetCallbacks(OnCreateWindowFunc wCreate,
-		     OnDestroyWindowFunc wDestroy,
-		     QueryPointerFunc qPointer,
-		     QueryPointerWindowFunc qPointerWindow,
-		     void *arg);
+                     OnDestroyWindowFunc wDestroy,
+                     QueryPointerFunc qPointer,
+                     QueryPointerWindowFunc qPointerWindow,
+                     void *arg);
 void *VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
-			 unsigned int *mapped);
+                         unsigned int *mapped);
 void VRXMouseMotionEvent(int x, int y, int relative);
+
+Window getWindowFromHandle(const struct WindowHandle *w);
+
