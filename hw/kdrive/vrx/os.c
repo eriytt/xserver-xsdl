@@ -56,6 +56,8 @@ FakeFini (void)
 
 pthread_mutex_t inputLock = PTHREAD_MUTEX_INITIALIZER;
 
+static int MouseState = 0;
+
 static void
 VRXPollInput(void)
 {
@@ -84,6 +86,20 @@ VRXPollInput(void)
 				head->event.motion.y,
 				0);
 	  break;
+        case VRX_E_BUTTON_DOWN:
+          MouseState |= KD_BUTTON_1;
+          KdEnqueuePointerEvent(vrxMouse,
+                                KD_MOUSE_DELTA | MouseState,
+				0, 0,
+				0);
+          break;
+        case VRX_E_BUTTON_UP:
+          MouseState = 0;
+          KdEnqueuePointerEvent(vrxMouse,
+                                KD_MOUSE_DELTA | MouseState,
+				0, 0,
+				0);
+          break;
 	default:
 	  LOGE("Unknown input event type %d", head->type);
 	}

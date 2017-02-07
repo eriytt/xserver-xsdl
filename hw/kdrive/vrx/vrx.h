@@ -151,14 +151,20 @@ typedef struct {
   Bool relative;
 } VRXMotionEvent;
 
+typedef struct {
+} VRXButtonEvent;
+
 typedef enum {
   VRX_E_KEY,
-  VRX_E_MOTION
+  VRX_E_MOTION,
+  VRX_E_BUTTON_DOWN,
+  VRX_E_BUTTON_UP,
 } VRXEventType;
 
 typedef union {
   VRXKeyEvent key;
   VRXMotionEvent motion;
+  VRXButtonEvent button;
 } VRXEvent;
 
 typedef struct _vrx_input_event {

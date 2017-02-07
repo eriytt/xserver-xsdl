@@ -1,3 +1,6 @@
+#ifndef VRXEXPORT_H
+#define VRXEXPORT_H
+
 #include <X11/X.h>
 
 struct WindowHandle;
@@ -21,6 +24,8 @@ void VRXSetCallbacks(OnCreateWindowFunc wCreate,
 void *VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned int *hret,
                          unsigned int *mapped);
 void VRXMouseMotionEvent(int x, int y, int relative);
+void VRXMouseButtonEvent(int down);
 
 Window getWindowFromHandle(const struct WindowHandle *w);
 
+#endif /* VRXEXPORT_H */

@@ -629,6 +629,33 @@ VRXMouseMotionEvent(int x, int y, int relative)
 }
 
 void
+VRXMouseButtonEvent(int down)
+{
+  VRXInputEvent *new_event = malloc(sizeof(VRXInputEvent));
+  if (new_event == 0)
+    {
+      LOGE("Failed to enque input event: %s", strerror(errno));
+      return;
+    }
+
+  new_event->type = down ? VRX_E_BUTTON_DOWN : VRX_E_BUTTON_UP;
+  new_event->next = 0;
+
+  pthread_mutex_lock(&inputLock);
+  if (vrx_event_queue == 0)
+    {
+      vrx_event_queue = new_event;
+      pthread_mutex_unlock(&inputLock);
+      return;
+    }
+
+  VRXInputEvent *tail = vrx_event_queue;
+  while (tail->next != 0) tail = tail->next;
+  tail->next = new_event;
+  pthread_mutex_unlock(&inputLock);
+}
+
+void
 VRXSetCallbacks(OnCreateWindowFunc wCreate,
 		OnDestroyWindowFunc wDestroy,
 		QueryPointerFunc qPointer,
