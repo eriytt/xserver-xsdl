@@ -407,7 +407,7 @@ vrxCreateWindow (WindowPtr pWin)
     return ret;
 
   if (ret && wcreate)
-    wcreate(pWin, callback_arg);
+    wcreate(pWin, pWin->drawable.id, callback_arg);
   return ret;
 }
 
@@ -427,7 +427,7 @@ vrxReparentWindow(WindowPtr pWin, WindowPtr priorParent)
   if (priorParent == root && pWin->parent != root)
     wdestroy(pWin, callback_arg);
   if (priorParent != root && pWin->parent == root)
-    wcreate(pWin, callback_arg);
+    wcreate(pWin, pWin->drawable.id, callback_arg);
 
   if (oldReparentWindow)
     {
@@ -667,10 +667,4 @@ VRXSetCallbacks(OnCreateWindowFunc wCreate,
   qpointer = qPointer;
   qpointerwindow = qPointerWindow;
   callback_arg = arg;
-}
-
-Window getWindowFromHandle(const struct WindowHandle *w)
-{
-  WindowPtr pWin = (WindowPtr)w;
-  return pWin->drawable.id;
 }

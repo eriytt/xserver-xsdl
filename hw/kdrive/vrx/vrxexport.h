@@ -5,7 +5,7 @@
 
 struct WindowHandle;
 
-typedef void (*OnCreateWindowFunc)(struct WindowHandle *, void *arg);
+typedef void (*OnCreateWindowFunc)(struct WindowHandle *, XID, void *arg);
 typedef void (*OnDestroyWindowFunc)(struct WindowHandle *, void *arg);
 
 typedef struct {
@@ -25,7 +25,5 @@ void *VRXGetWindowBuffer(struct WindowHandle *w, unsigned int *wret, unsigned in
                          unsigned int *mapped);
 void VRXMouseMotionEvent(int x, int y, int relative);
 void VRXMouseButtonEvent(int down);
-
-Window getWindowFromHandle(const struct WindowHandle *w);
 
 #endif /* VRXEXPORT_H */
